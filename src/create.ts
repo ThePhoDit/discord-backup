@@ -140,7 +140,7 @@ export async function getChannels(guild: Guild, options: CreateOptions) {
         const others = (guild.channels.cache
             .filter((ch) => {
                 return !ch.parent && ch.type !== ChannelType.GuildCategory
-                    //&& ch.type !== 'GUILD_STORE' // there is no way to restore store channels, ignore them
+                    // && ch.type !== 'GUILD_STORE' // there is no way to restore store channels, ignore them
                     && ch.type !== ChannelType.GuildNewsThread && ch.type !== ChannelType.GuildPrivateThread && ch.type !== ChannelType.GuildPublicThread // threads will be saved with fetchTextChannelData
             }) as Collection<Snowflake, Exclude<GuildChannel, ThreadChannel>>)
             .sort((a, b) => a.position - b.position)

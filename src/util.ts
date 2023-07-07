@@ -10,11 +10,11 @@ import type {
 } from './types';
 import {
     CategoryChannel,
-    ChannelType, 
+    ChannelType,
     Collection,
     Guild,
     GuildFeature,
-    GuildDefaultMessageNotifications, 
+    GuildDefaultMessageNotifications,
     GuildSystemChannelFlags,
     GuildChannelCreateOptions,
     Message,
@@ -125,7 +125,7 @@ export async function fetchChannelMessages (channel: TextChannel | NewsChannel |
     }
 
     return messages;
-} 
+}
 
 /**
  * Fetches the text channel data that is necessary for the backup
@@ -316,7 +316,7 @@ export async function loadChannel(
 /**
  * Delete all roles, all channels, all emojis, etc... of a guild
  */
-export async function clearGuild(guild: Guild) {
+export async function clearGuild(guild: Guild, fullClear=false) {
     guild.roles.cache
         .filter((role) => !role.managed && role.editable && role.id !== guild.id)
         .forEach((role) => {
@@ -328,28 +328,31 @@ export async function clearGuild(guild: Guild) {
     guild.emojis.cache.forEach((emoji) => {
         emoji.delete().catch(() => {});
     });
-    const webhooks = await guild.fetchWebhooks();
-    webhooks.forEach((webhook) => {
-        webhook.delete().catch(() => {});
-    });
-    const bans = await guild.bans.fetch();
-    bans.forEach((ban) => {
-        guild.members.unban(ban.user).catch(() => {});
-    });
-    guild.setAFKChannel(null);
-    guild.setAFKTimeout(60 * 5);
-    guild.setIcon(null);
-    guild.setBanner(null).catch(() => {});
-    guild.setSplash(null).catch(() => {});
-    guild.setDefaultMessageNotifications(GuildDefaultMessageNotifications.OnlyMentions);
-    guild.setWidgetSettings({
-        enabled: false,
-        channel: null
-    });
-    if (!guild.features.includes(GuildFeature.Community)) {
-        guild.setExplicitContentFilter(GuildExplicitContentFilter.Disabled);
-        guild.setVerificationLevel(GuildVerificationLevel.None);
+    if (fullClear) {
+        const webhooks = await guild.fetchWebhooks();
+        webhooks.forEach((webhook) => {
+            webhook.delete().catch(() => {});
+        });
+        const bans = await guild.bans.fetch();
+        bans.forEach((ban) => {
+            guild.members.unban(ban.user).catch(() => {});
+        });
+        guild.setAFKChannel(null);
+        guild.setAFKTimeout(60 * 5);
+        guild.setIcon(null);
+        guild.setBanner(null).catch(() => {});
+        guild.setSplash(null).catch(() => {});
+        guild.setDefaultMessageNotifications(GuildDefaultMessageNotifications.OnlyMentions);
+        guild.setWidgetSettings({
+            enabled: false,
+            channel: null
+        });
+        if (!guild.features.includes(GuildFeature.Community)) {
+            guild.setExplicitContentFilter(GuildExplicitContentFilter.Disabled);
+            guild.setVerificationLevel(GuildVerificationLevel.None);
+        }
     }
+
     guild.setSystemChannel(null);
     guild.setSystemChannelFlags([GuildSystemChannelFlags.SuppressGuildReminderNotifications, GuildSystemChannelFlags.SuppressJoinNotifications, GuildSystemChannelFlags.SuppressPremiumSubscriptions]);
     return;

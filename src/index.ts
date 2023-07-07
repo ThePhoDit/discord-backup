@@ -38,7 +38,7 @@ const getBackupData = async (backupID: string) => {
 };
 
 /**
- * Fetches a backyp and returns the information about it
+ * Fetches a backup and returns the information about it
  */
 export const fetch = (backupID: string) => {
     return new Promise<BackupInfos>(async (resolve, reject) => {
@@ -181,9 +181,9 @@ export const load = async (
                     // Clear the guild
                     await utilMaster.clearGuild(guild);
                 }
+
+                if (options.fullLoad) await loadMaster.loadConfig(guild, backupData)
                 await Promise.all([
-                    // Restore guild configuration
-                    loadMaster.loadConfig(guild, backupData),
                     // Restore guild roles
                     loadMaster.loadRoles(guild, backupData),
                     // Restore guild channels
